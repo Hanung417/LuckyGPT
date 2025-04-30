@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import FortuneCard from '../components/FortuneCard';
 import { getKmaWeather } from '../utils/kmaWeather';
+import { Link, useNavigate } from 'react-router-dom';
+import { isLoggedIn, logout } from '../utils/auth';
+
 
 const mbtiList = [
   'INTJ', 'INTP', 'ENTJ', 'ENTP',
@@ -25,27 +28,30 @@ const moods = [
   { emoji: '😍', label: '사랑스러움' },
 ];
 
-
 export default function Home() {
   const [mbti, setMbti] = useState('');
   const [mood, setMood] = useState('');
   const [fortune, setFortune] = useState<any | null>(null);
   const [weather, setWeather] = useState('날씨 불러오는 중...');
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // 로그인하지 않았으면 /auth로 이동
+    if (!isLoggedIn()) {
+      navigate('/auth');
+      return;
+    }
+
+    // 현재 위치 기반 날씨 정보 가져오기
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-        console.log('📍 위치 확인:', lat, lon); // 🔍 확인용
-  
         const w = await getKmaWeather(lat, lon);
-        console.log('🌤 날씨 정보:', w); // 🔍 확인용
-  
         setWeather(w);
       },
       (err) => {
-        console.warn("🚫 위치 권한 오류:", err);
+        console.warn("위치 권한 오류:", err);
         setWeather("날씨 정보 없음");
       }
     );
@@ -53,10 +59,15 @@ export default function Home() {
 
   const handleGenerateFortune = async () => {
     try {
+      const token = localStorage.getItem('access_token');
       const response = await axios.post('/generate', {
         mbti,
         mood,
-        weather, // 실제 날씨 반영
+        weather,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setFortune(response.data);
@@ -68,7 +79,13 @@ export default function Home() {
 
   return (
     <div className="max-w-md mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">🎯 LuckyGPT - 오늘의 운세</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">🎯 LuckyGPT - 오늘의 운세</h1>
+        <Link to="/history" className="text-blue-500 underline text-sm">
+          📚 히스토리 보기
+        </Link>
+      </div>
+
       <p className="mb-4 text-sm text-gray-600">📍 현재 날씨: {weather}</p>
 
       <label className="block mb-2">MBTI 선택:</label>
@@ -84,7 +101,7 @@ export default function Home() {
       </select>
 
       <label className="block mb-2">오늘 기분:</label>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         {moods.map((m) => (
           <button
             key={m.label}
@@ -97,7 +114,12 @@ export default function Home() {
           </button>
         ))}
       </div>
-
+      <button
+        onClick={logout}
+        className="text-sm text-gray-500 hover:text-red-500 ml-auto"
+        >
+        🚪 로그아웃
+      </button>
       <button
         className="bg-purple-500 text-white px-4 py-2 rounded w-full"
         onClick={handleGenerateFortune}

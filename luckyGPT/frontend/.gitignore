@@ -1,24 +1,32 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# 기본 Node.js + React 관련
+node_modules/
+dist/
+.env
+.vite/
 
-node_modules
-dist
-dist-ssr
-*.local
+# Python 관련
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.luckygpt_env/
+.luckygpt/
+*.sqlite3
+*.db
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# VSCode 등 편집기 관련
+.vscode/
+.idea/
+
+# 시스템 관련
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# FastAPI Uvicorn logs (선택)
+*.log
+
+# 백엔드 가상환경
+backend/env/
+backend/.env
