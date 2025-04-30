@@ -3,14 +3,28 @@ import axios from '../api/axios';
 import FortuneCard from '../components/FortuneCard';
 import { getKmaWeather } from '../utils/kmaWeather';
 
-const mbtiList = ['INTP', 'INFP', 'ENFP', 'ISTJ', 'ENTJ', 'ISFJ', 'ESFP'];
+const mbtiList = [
+  'INTJ', 'INTP', 'ENTJ', 'ENTP',
+  'INFJ', 'INFP', 'ENFJ', 'ENFP',
+  'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
+  'ISTP', 'ISFP', 'ESTP', 'ESFP'
+];
 
 const moods = [
   { emoji: '😄', label: '기쁨' },
   { emoji: '😐', label: '평범함' },
   { emoji: '😞', label: '우울함' },
   { emoji: '😡', label: '분노' },
+  { emoji: '😢', label: '슬픔' },
+  { emoji: '😴', label: '피곤함' },
+  { emoji: '😰', label: '불안함' },
+  { emoji: '🤩', label: '설렘' },
+  { emoji: '😎', label: '자신감' },
+  { emoji: '😕', label: '혼란스러움' },
+  { emoji: '🥱', label: '지루함' },
+  { emoji: '😍', label: '사랑스러움' },
 ];
+
 
 export default function Home() {
   const [mbti, setMbti] = useState('');
