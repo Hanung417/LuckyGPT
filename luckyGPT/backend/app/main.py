@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import generate
+from app.routers import auth
 
 app = FastAPI()
 
@@ -15,3 +16,4 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(generate.router)
+app.include_router(auth.router)
