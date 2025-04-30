@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
-import React, { useState } from 'react';
 import FortuneCard from '../components/FortuneCard';
+import { getKmaWeather } from '../utils/kmaWeather';
 
 const mbtiList = ['INTP', 'INFP', 'ENFP', 'ISTJ', 'ENTJ', 'ISFJ', 'ESFP'];
 
@@ -15,15 +16,35 @@ export default function Home() {
   const [mbti, setMbti] = useState('');
   const [mood, setMood] = useState('');
   const [fortune, setFortune] = useState<any | null>(null);
+  const [weather, setWeather] = useState('날씨 불러오는 중...');
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        console.log('📍 위치 확인:', lat, lon); // 🔍 확인용
+  
+        const w = await getKmaWeather(lat, lon);
+        console.log('🌤 날씨 정보:', w); // 🔍 확인용
+  
+        setWeather(w);
+      },
+      (err) => {
+        console.warn("🚫 위치 권한 오류:", err);
+        setWeather("날씨 정보 없음");
+      }
+    );
+  }, []);
 
   const handleGenerateFortune = async () => {
     try {
       const response = await axios.post('/generate', {
         mbti,
         mood,
-        weather: '흐림, 10도', // 현재는 하드코딩, 나중에 날씨 API로 자동화
+        weather, // 실제 날씨 반영
       });
-  
+
       setFortune(response.data);
     } catch (error) {
       console.error('운세 생성 실패:', error);
@@ -34,6 +55,7 @@ export default function Home() {
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">🎯 LuckyGPT - 오늘의 운세</h1>
+      <p className="mb-4 text-sm text-gray-600">📍 현재 날씨: {weather}</p>
 
       <label className="block mb-2">MBTI 선택:</label>
       <select
