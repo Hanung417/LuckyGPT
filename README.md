@@ -24,14 +24,12 @@
 
 1. **백엔드 실행**
 
-```bash
+```
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
-프론트엔드 실행
 
-bash
-복사
+2. **프론트트엔드 실행**
 cd frontend
 npm install
 npm start
@@ -43,28 +41,6 @@ Frontend: Vercel에 배포 중
 Backend: Heroku에 배포 중
 
 Database: 로컬 SQLite (현재 클라우드 DB 변경 예정)
-
-🛠️ 설치 및 사용법
-리포지토리 클론
-
-bash
-복사
-git clone https://github.com/yourusername/luckygpt.git
-cd luckygpt
-백엔드 및 프론트엔드 설정
-
-bash
-복사
-cd backend
-pip install -r requirements.txt  # 백엔드 의존성 설치
-
-cd frontend
-npm install  # 프론트엔드 의존성 설치
-애플리케이션 실행
-
-백엔드: uvicorn app.main:app --reload
-
-프론트엔드: npm start
 
 🔑 기능 설명
 1. 운세 생성
