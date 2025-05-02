@@ -4,6 +4,8 @@ import FortuneCard from '../components/FortuneCard';
 import { getKmaWeather } from '../utils/kmaWeather';
 import { Link, useNavigate } from 'react-router-dom';
 import { isLoggedIn, logout } from '../utils/auth';
+import { Button } from '../components/Button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 const mbtiList = [
@@ -31,18 +33,16 @@ const moods = [
 export default function Home() {
   const [mbti, setMbti] = useState('');
   const [mood, setMood] = useState('');
-  const [fortune, setFortune] = useState<any | null>(null);
+  const [fortune, setFortune] = useState(null);  // 운세 결과 상태
   const [weather, setWeather] = useState('날씨 불러오는 중...');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 로그인하지 않았으면 /auth로 이동
     if (!isLoggedIn()) {
       navigate('/auth');
       return;
     }
 
-    // 현재 위치 기반 날씨 정보 가져오기
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
@@ -55,9 +55,9 @@ export default function Home() {
         setWeather("날씨 정보 없음");
       }
     );
-  }, []);
+  }, [navigate]);
 
-  const handleGenerateFortune = async () => {
+  const handleGetFortune = async () => {
     try {
       const token = localStorage.getItem('access_token');
       const response = await axios.post('/generate', {
@@ -70,7 +70,7 @@ export default function Home() {
         },
       });
 
-      setFortune(response.data);
+      setFortune(response.data); // 운세 결과를 상태에 저장
     } catch (error) {
       console.error('운세 생성 실패:', error);
       alert('운세 생성 중 오류가 발생했습니다.');
@@ -78,61 +78,85 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">🎯 LuckyGPT - 오늘의 운세</h1>
-        <Link to="/history" className="text-blue-500 underline text-sm">
-          📚 히스토리 보기
-        </Link>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-950 to-purple-800 text-white flex flex-col items-center justify-center relative px-4 py-10 overflow-hidden">
+      <div className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-10 z-0" style={{ backgroundImage: 'url(/assets/astrology-circle.png)' }} />
+
+      <div className="z-10 text-center">
+        <h1 className="text-4xl font-bold mb-2">🔮 LuckyGPT</h1>
+        <p className="text-purple-200 text-sm mb-4">📍 현재 날씨: {weather}</p>
+        <Link to="/history" className="text-blue-300 underline text-sm">📚 히스토리 보기</Link>
       </div>
 
-      <p className="mb-4 text-sm text-gray-600">📍 현재 날씨: {weather}</p>
-
-      <label className="block mb-2">MBTI 선택:</label>
-      <select
-        className="w-full p-2 border rounded mb-4"
-        value={mbti}
-        onChange={(e) => setMbti(e.target.value)}
-      >
-        <option value="">선택하세요</option>
-        {mbtiList.map((type) => (
-          <option key={type} value={type}>{type}</option>
-        ))}
-      </select>
-
-      <label className="block mb-2">오늘 기분:</label>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {moods.map((m) => (
-          <button
-            key={m.label}
-            className={`p-2 rounded border ${
-              mood === m.label ? 'bg-blue-200' : ''
-            }`}
-            onClick={() => setMood(m.label)}
-          >
-            {m.emoji}
-          </button>
-        ))}
-      </div>
-      <button
-        onClick={logout}
-        className="text-sm text-gray-500 hover:text-red-500 ml-auto"
-        >
-        🚪 로그아웃
-      </button>
-      <button
-        className="bg-purple-500 text-white px-4 py-2 rounded w-full"
-        onClick={handleGenerateFortune}
-        disabled={!mbti || !mood}
-      >
-        운세 생성
-      </button>
-
-      {fortune && (
-        <div className="mt-6">
-          <FortuneCard {...fortune} />
+      <div className="z-10 mt-8 w-full max-w-md space-y-6">
+        <div>
+          <h2 className="mb-2">MBTI를 선택하세요</h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {mbtiList.map((type) => (
+              <Button
+                key={type}
+                onClick={() => setMbti(type)}
+                variant={mbti === type ? 'secondary' : 'outline'}
+                className="w-16"
+              >
+                {type}
+              </Button>
+            ))}
+          </div>
         </div>
-      )}
+
+        <div>
+          <h2 className="mb-2">오늘 기분은 어떤가요?</h2>
+          <div className="flex flex-wrap justify-center gap-2">
+            {moods.map(({ emoji, label }) => (
+              <Button
+                key={label}
+                onClick={() => setMood(label)}
+                variant={mood === label ? 'secondary' : 'outline'}
+                className="w-24"
+              >
+                {emoji} {label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <button
+            onClick={logout}
+            className="text-sm text-gray-300 hover:text-red-500"
+          >
+            🚪 로그아웃
+          </button>
+        </div>
+
+        <Button
+          onClick={handleGetFortune}
+          className="w-full py-3 text-lg bg-purple-600 hover:bg-purple-700"
+          disabled={!mbti || !mood}
+        >
+          운세 생성
+        </Button>
+
+        <AnimatePresence>
+          {fortune && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.4 }}
+              className="mt-8"
+            >
+              {/* 운세 카드 출력 */}
+              <FortuneCard
+                summary={fortune.summary}
+                advice={fortune.advice}
+                caution={fortune.caution}
+                encouragement={fortune.encouragement}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

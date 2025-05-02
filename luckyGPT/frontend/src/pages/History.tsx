@@ -42,7 +42,7 @@ export default function History() {
     } else {
       fetchHistory();
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="max-w-xl mx-auto p-4">
@@ -55,16 +55,14 @@ export default function History() {
       <div className="flex flex-col gap-4">
         {history.map((item) => (
           <div key={item.id} className="border rounded-lg p-4 shadow-md bg-white">
-            <p className="text-sm text-gray-400">
-              {new Date(item.created_at).toLocaleString()}
-            </p>
+            <p className="text-sm text-gray-400">{new Date(item.created_at).toLocaleString()}</p>
             <p><strong>MBTI:</strong> {item.mbti}</p>
             <p><strong>기분:</strong> {item.mood}</p>
             <p><strong>날씨:</strong> {item.weather}</p>
-            <p><strong>요약:</strong> {item.summary}</p>
-            <p><strong>추천:</strong> {item.advice}</p>
-            <p><strong>주의:</strong> {item.caution}</p>
-            <p className="text-indigo-600 italic">💬 응원 메시지: {item.encouragement}</p>
+            <p><strong>요약:</strong> {item.result.summary}</p>  {/* result는 객체로 변환됨 */}
+            <p><strong>추천:</strong> {item.result.advice}</p>
+            <p><strong>주의:</strong> {item.result.caution}</p>
+            <p className="text-indigo-600 italic">💬 응원 메시지: {item.result.encouragement}</p>
           </div>
         ))}
       </div>
