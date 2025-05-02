@@ -40,9 +40,9 @@ npm start
 운세 생성: 로그인 후, MBTI, 기분, 날씨를 선택하고 "운세 생성" 버튼을 클릭하여 운세를 생성하세요.
 
 ## 📦 배포 환경
-Frontend: Vercel에 배포 중
+Frontend: 예정 없음
 
-Backend: Heroku에 배포 중
+Backend: 예정 없음
 
 Database: 로컬 SQLite (현재 클라우드 DB 변경 예정)
 
