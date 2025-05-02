@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
-from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.user import User
@@ -9,7 +10,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# DB 세션 주입
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")  # 로그인 URL
+
+# ✅ DB 세션 주입
 def get_db():
     db = SessionLocal()
     try:
@@ -17,12 +20,11 @@ def get_db():
     finally:
         db.close()
 
-# 로그인된 사용자 가져오기
-def get_current_user(token: str = Depends(lambda: None), db: Session = Depends(get_db)) -> User:
-    from fastapi.security import OAuth2PasswordBearer
-    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # login 엔드포인트에서 토큰 발급
-
-    token = oauth2_scheme()
+# ✅ 로그인된 사용자 가져오기
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
     try:
         payload = decode_access_token(token)
         if payload is None or "sub" not in payload:
