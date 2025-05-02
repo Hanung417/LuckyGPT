@@ -28,21 +28,25 @@
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
-
-2. **프론트트엔드 실행**
+```
+2. **프론트엔드 실행**
+```
 cd frontend
 npm install
 npm start
+
+```
+
 운세 생성: 로그인 후, MBTI, 기분, 날씨를 선택하고 "운세 생성" 버튼을 클릭하여 운세를 생성하세요.
 
-📦 배포 환경
+## 📦 배포 환경
 Frontend: Vercel에 배포 중
 
 Backend: Heroku에 배포 중
 
 Database: 로컬 SQLite (현재 클라우드 DB 변경 예정)
 
-🔑 기능 설명
+## 🔑 기능 설명
 1. 운세 생성
 운세 생성은 사용자의 MBTI, 기분, 날씨 정보를 바탕으로 AI가 운세를 생성합니다. 예를 들어, "기쁨" 기분을 선택하면 기쁨에 맞는 운세 요약과 추천 행동을 제공합니다.
 
